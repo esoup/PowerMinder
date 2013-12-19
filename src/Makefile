@@ -25,13 +25,16 @@ LD	= g++
 CFLAGS	=
 LDFLAGS	=
 
+OBJS	= Calendar.o
 
 %.o: %.cpp %.hpp
 	$(CC) -c $(CFLAGS) $*.cpp
 
 
-all: Calendar.o
+all: $(OBJS) docs
 
+docs:
+	doxygen ../docs/Doxyfile
 
 clean:
-	rm -rf *.o *~
+	rm -rf *.o *~ ../docs/html

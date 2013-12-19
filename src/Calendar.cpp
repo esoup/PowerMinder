@@ -31,7 +31,6 @@ using namespace PowerMinder;
 const unsigned int MAX_CHANGE_POINTS = 5;
 
 
-
 /** A daily schedule, composed of MAX_CHANGE_POINTS period change points.
  *
  *  The first period change point MUST be at midnight (m_time == 0).
@@ -60,7 +59,6 @@ typedef struct schedule_s {
  *  A calendar is terminated by a season with an ID == 0xFF.
  */
 typedef struct season_s {
-  uint8_t m_season_id;
   uint8_t m_startMonth;
   uint8_t m_startDay;
   uint8_t m_workday_schedule_idx;
@@ -87,18 +85,18 @@ static const schedule_t PGE_schedules[2] = {{{{0,  OFF_PEAK}, // Weekday
 
 /** Default calendar, from PG&E */
 
-static const season_t PGE_seasons[3] = {{0, 5, 1, 0, 1},
-					{1, 11, 1, 0, 1},
-					{0xFF, 0, 0, 0, 0}};
+static const season_t PGE_seasons[3] = {{5, 1, 0, 1},
+					{11, 1, 0, 1},
+					{0, 0, 0, 0}};
 
 
 
 /** Where the user-defined schedules are stored in NVRAM */
-static const schedule_t *user_schedules = 0x0000;
+static schedule_t *user_schedules = 0x0000;
 
 
 /** Where the user-defined seasons are stored in NVRAM */
-static const season_t *user_seasons = 0x0000;
+static season_t *user_seasons = 0x0000;
 
 
 /** Days in months */
@@ -148,13 +146,13 @@ struct Calendar::Implementation {
     // the one before it. If we reach the end of the calendar,
     // that means there are no further entries, so the last one
     // is the current one.
-    while (seasons[i].m_season_id != 0xFF) {
+    while (seasons[i].m_startMonth > 0) {
       if (seasons[i].m_startMonth > month ||
           seasons[i].m_startDay > day) {
 	if (i == 0) {
 	  // Calendars are circular, hence the entry previous to
 	  // the first one is the last one
-	  while (seasons[++i].m_season_id != 0xFF);
+	  while (seasons[++i].m_startMonth != 0);
 	}
 	break;
       }
@@ -178,9 +176,103 @@ Calendar::Calendar()
   : m_impl(new Implementation)
 {
   if (m_impl->schedules[0].m_period_change[0].m_time != 0) m_impl->schedules = PGE_schedules;
-  if (m_impl->seasons[0].m_season_id == 0xFF) m_impl->seasons = PGE_seasons;
+  if (m_impl->seasons[0].m_startMonth == 0) m_impl->seasons = PGE_seasons;
 }
 
+
+
+bool
+Calendar::defineSchedule(unsigned char id,
+			 period_t      cost_at_00_00)
+{
+  if (id > 31) return false;
+
+  user_schedules[id].m_period_change[0].m_time = 0;
+  user_schedules[id].m_period_change[0].m_period = cost_at_00_00;
+
+  for (int i = 1; i < MAX_CHANGE_POINTS; i++ ) {
+    user_schedules[id].m_period_change[i].m_time = 0;
+  }
+
+  if (id == 0) m_impl->schedules = user_schedules;
+
+  return true;
+}
+
+
+bool
+Calendar::addPeriod(unsigned char id,
+		    unsigned char hrs,
+		    unsigned char mins,
+		    period_t      cost)
+{
+  if (id > 31) return false;
+  if (user_schedules[id].m_period_change[0].m_time != 0) return false;
+  if (hrs > 23) return false;
+  if (mins > 59) return false; 
+
+  int time = (hrs * 60 * mins + 15) / 30;
+  if (hrs == 0) return false;
+
+  // Find the next "empty" entry in the scedule
+  for (int i = 1; i < MAX_CHANGE_POINTS; i++ ) {
+    if (user_schedules[id].m_period_change[i].m_time == 0 ||
+	user_schedules[id].m_period_change[i].m_time == time) {
+      user_schedules[id].m_period_change[i].m_time = time;
+      user_schedules[id].m_period_change[i].m_period = cost;
+      return true;
+    }
+
+    // Not in chronological order?
+    if (user_schedules[id].m_period_change[i].m_time > time) return false;
+  }
+
+  // We ran out of room!
+  return false;
+}
+
+
+bool
+Calendar::deleteSchedules()
+{
+  m_impl->schedules = PGE_schedules;
+}
+
+
+bool
+Calendar::defineSeason(unsigned char id,
+		       unsigned char month,
+		       unsigned char day,
+		       unsigned char workdayScheduleId,
+		       unsigned char weekendScheduleId)
+{
+  if (id > 63) return false;
+  if (month < 1 || month > 12) return false;
+  if (day < 1 || day > daysInMonth[month-1]) return false;
+
+  user_seasons[id].m_startMonth           = month;
+  user_seasons[id].m_startDay             = day;
+  user_seasons[id].m_workday_schedule_idx = workdayScheduleId;
+  user_seasons[id].m_holiday_schedule_idx = weekendScheduleId;
+
+  if (id == 0) m_impl->seasons = user_seasons;
+
+  return true;
+}
+
+
+bool
+Calendar::deleteSeasons()
+{
+  m_impl->seasons = PGE_seasons;
+}
+
+
+bool
+Calendar::check_calendar()
+{
+  // ToDo
+}
 
 
 bool
