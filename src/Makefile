@@ -41,4 +41,5 @@ test-Calendar: Calendar.cpp Calendar.hpp
 	./test-Calendar
 
 clean:
-	rm -rf *.o *~ ../docs/html
+	rm -rf *.exe *.o *~ ../docs/html
+	rm -rf *.stackdump
