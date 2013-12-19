@@ -43,6 +43,16 @@ namespace PowerMinder {
 		    uint8_t hour,       ///< 0-23
 		    uint8_t min);       ///< 0-59
 
+    /** Returns the current cost period, as identified by a previous call to findPeriod */
+    period_t getCurrentCost();
+
+    /** Returns the next cost period, as identified by a previous call to findPeriod */
+    period_t getNextCost();
+
+    /** Returns the number of minutes until the next cost period (up to a maximum of 65535 mins),
+     *  as identified by a previous call to findPeriod */
+    uint16_t  getTimeToNextCost();
+
 
   private:
     class Implementation;

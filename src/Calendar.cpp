@@ -230,3 +230,24 @@ Calendar::findPeriod(uint8_t month,
 }
 
 
+period_t
+Calendar::getCurrentCost()
+{
+  return m_impl->m_currentCost;
+}
+
+
+period_t
+Calendar::getNextCost()
+{
+  return m_impl->m_nextPeriod;
+}
+
+
+uint16_t
+Calendar::getTimeToNextCost()
+{
+  return (m_impl->m_timeToNextPeriod > 65535/30) ? 65535 : m_impl->m_timeToNextPeriod * 30;
+}
+
+
