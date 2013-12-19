@@ -36,5 +36,9 @@ all: $(OBJS) docs
 docs:
 	doxygen ../docs/Doxyfile
 
+test-Calendar: Calendar.cpp Calendar.hpp
+	$(CC) -o $@ $(CFLAGS) -DTEST -DDEBUG Calendar.cpp
+	./test-Calendar
+
 clean:
 	rm -rf *.o *~ ../docs/html

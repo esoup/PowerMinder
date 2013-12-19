@@ -79,6 +79,11 @@ namespace PowerMinder {
     /** Check the calendar for correctness. Returns TRUE of it is OK */
     bool check_calendar();
 
+#ifdef DEBUG
+    /** Print the specified calendar */
+    void print(bool user = false);
+#endif
+
     /** Find the rate period information corresponding to the specified date and time.
      *  Returns TRUE if succesful.
      */

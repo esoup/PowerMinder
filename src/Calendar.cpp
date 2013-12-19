@@ -20,6 +20,9 @@
 
 
 #include <stdint.h>
+#ifdef DEBUG
+#include <stdio.h>
+#endif
 
 #include "Calendar.hpp"
 
@@ -92,11 +95,11 @@ static const season_t PGE_seasons[3] = {{5, 1, 0, 1},
 
 
 /** Where the user-defined schedules are stored in NVRAM */
-static schedule_t *user_schedules = 0x0000;
+static schedule_t *user_schedules = /*0x0000;*/ new schedule_t[31];
 
 
 /** Where the user-defined seasons are stored in NVRAM */
-static season_t *user_seasons = 0x0000;
+static season_t *user_seasons = /*0x0000;*/ new season_t[64];
 
 
 /** Days in months */
@@ -127,11 +130,62 @@ struct Calendar::Implementation {
 
   Implementation()
     : schedules(user_schedules), seasons(user_seasons)
-  {}
+  {
+    if (schedules[0].m_period_change[0].m_time != 0) schedules = PGE_schedules;
+    if (seasons[0].m_startMonth == 0) seasons = PGE_seasons;
+  }
 
   ~Implementation()
   {}
 
+
+#ifdef DEBUG  
+  void printPeriodChange(int unsigned time,
+			 period_t     cost)
+  {
+    printf("      %02d:%02d ", time / 2, time % 2 * 30);
+
+    switch (cost) {
+
+    case OFF_PEAK: {
+      printf("OFF-PEAK");
+      break;
+    }
+
+    case PARTIAL_PEAK: {
+      printf("MID-PEAK");
+      break;
+    }
+
+    case ON_PEAK: {
+      printf("ON-PEAK");
+      break;
+    }
+
+    default: {
+      printf("?? (%d)", cost);
+      break;
+    }
+
+    }
+    printf("\n");
+  }
+
+  void printSchedule(const schedule_t *schedule)
+  {
+    printPeriodChange(schedule->m_period_change[0].m_time,
+		      schedule->m_period_change[0].m_period);
+
+    unsigned char i = 1;
+    while (i < MAX_CHANGE_POINTS &&
+	   schedule->m_period_change[i].m_time > 0) {
+
+      printPeriodChange(schedule->m_period_change[i].m_time,
+			schedule->m_period_change[i].m_period);
+      i++;
+    }
+  }
+#endif
 
   /** Find the index of the schedule corresponding to the specified date */
   unsigned char
@@ -175,8 +229,13 @@ struct Calendar::Implementation {
 Calendar::Calendar()
   : m_impl(new Implementation)
 {
-  if (m_impl->schedules[0].m_period_change[0].m_time != 0) m_impl->schedules = PGE_schedules;
-  if (m_impl->seasons[0].m_startMonth == 0) m_impl->seasons = PGE_seasons;
+}
+
+
+
+Calendar::~Calendar()
+{
+  delete m_impl;
 }
 
 
@@ -275,6 +334,29 @@ Calendar::check_calendar()
 }
 
 
+#ifdef DEBUG
+void
+Calendar::print(bool user)
+{
+  const schedule_t *schedules = (user) ? user_schedules : PGE_schedules;
+  const season_t   *seasons   = (user) ? user_seasons   : PGE_seasons;;
+
+  int i = 0;
+
+  printf("Calendar:\n");
+  while (seasons[i].m_startMonth > 0) {
+    printf("  %02d/%02d\n", seasons[i].m_startMonth, seasons[i].m_startDay);
+    printf("    Workday Schedule:\n");
+    m_impl->printSchedule(&schedules[seasons[i].m_workday_schedule_idx]);
+    printf("    Weekend Schedule:\n");
+    m_impl->printSchedule(&schedules[seasons[i].m_holiday_schedule_idx]);
+
+    i++;
+  }
+}
+#endif
+
+
 bool
 Calendar::findPeriod(uint8_t month,
 		     uint8_t day,
@@ -343,3 +425,14 @@ Calendar::getTimeToNextCost()
 }
 
 
+#ifdef TEST
+int
+main(int argc, const char* argv[])
+{
+  Calendar c;
+
+  c.print();
+
+  return 0;
+}
+#endif
