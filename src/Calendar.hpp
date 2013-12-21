@@ -76,10 +76,10 @@ namespace PowerMinder {
     /** Delete ALL user seasons. The default ones will be used. */
     bool deleteSeasons();
 
-    /** Check the calendar for correctness. Returns TRUE of it is OK */
-    bool check_calendar();
-
 #ifdef DEBUG
+    /** Check the calendar for correctness. Returns TRUE of it is OK */
+    bool check(bool user = true);
+
     /** Print the specified calendar */
     void print(bool user = false);
 #endif
