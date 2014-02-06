@@ -633,40 +633,122 @@ design rules under a new name.</description>
 </pass>
 </autorouter>
 <elements>
-<element name="U$1" library="adafruit" package="DIL08-ROUND" value="DS1302" x="8.89" y="11.43"/>
-<element name="U$2" library="adafruit" package="CR2032-THRU" value="" x="13.97" y="27.94"/>
-<element name="S1" library="adafruit" package="B3F-40XX" value="" x="88.9" y="7.62">
-<attribute name="OC_NEWARK" value="36K3105" x="88.9" y="7.62" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="B3F-4000" x="88.9" y="7.62" size="1.778" layer="27" display="off"/>
-<attribute name="MF" value="OMRON COMPONENTS USA" x="88.9" y="7.62" size="1.778" layer="27" display="off"/>
-<attribute name="OC_FARNELL" value="176434" x="88.9" y="7.62" size="1.778" layer="27" display="off"/>
+<element name="U$1" library="adafruit" package="DIL08-ROUND" value="DS1302" x="15.24" y="27.94"/>
+<element name="CR2032" library="adafruit" package="CR2032-THRU" value="3V" x="38.1" y="13.97"/>
+<element name="S1" library="adafruit" package="B3F-40XX" value="" x="16.51" y="60.96">
+<attribute name="OC_NEWARK" value="36K3105" x="16.51" y="60.96" size="1.778" layer="27" display="off"/>
+<attribute name="MPN" value="B3F-4000" x="16.51" y="60.96" size="1.778" layer="27" display="off"/>
+<attribute name="MF" value="OMRON COMPONENTS USA" x="16.51" y="60.96" size="1.778" layer="27" display="off"/>
+<attribute name="OC_FARNELL" value="176434" x="16.51" y="60.96" size="1.778" layer="27" display="off"/>
 </element>
-<element name="LED1" library="adafruit" package="LED5MM" value="" x="43.18" y="20.32"/>
-<element name="LED2" library="adafruit" package="LED5MM" value="" x="44.45" y="12.7"/>
-<element name="LED3" library="adafruit" package="LED5MM" value="" x="44.45" y="5.08"/>
-<element name="R1" library="adafruit" package="0207/12" value="" x="41.91" y="49.53"/>
-<element name="R2" library="adafruit" package="0207/12" value="" x="62.23" y="52.07"/>
-<element name="R3" library="adafruit" package="0207/12" value="" x="71.12" y="44.45"/>
-<element name="R4" library="adafruit" package="0207/12" value="" x="48.26" y="39.37"/>
-<element name="Q1" library="adafruit" package="TC26H" value="" x="33.02" y="26.67">
-<attribute name="OC_NEWARK" value="unknown" x="33.02" y="26.67" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="" x="33.02" y="26.67" size="1.778" layer="27" display="off"/>
-<attribute name="MF" value="" x="33.02" y="26.67" size="1.778" layer="27" display="off"/>
-<attribute name="OC_FARNELL" value="unknown" x="33.02" y="26.67" size="1.778" layer="27" display="off"/>
+<element name="LED1" library="adafruit" package="LED5MM" value="" x="3.81" y="72.39" rot="R90"/>
+<element name="LED2" library="adafruit" package="LED5MM" value="" x="3.81" y="64.77" rot="R90"/>
+<element name="LED3" library="adafruit" package="LED5MM" value="" x="3.81" y="57.15" rot="R90"/>
+<element name="R1" library="adafruit" package="0207/12" value="" x="2.54" y="44.45" rot="R90"/>
+<element name="R2" library="adafruit" package="0207/12" value="" x="6.35" y="44.45" rot="R90"/>
+<element name="R3" library="adafruit" package="0207/12" value="" x="16.51" y="72.39"/>
+<element name="R4" library="adafruit" package="0207/12" value="" x="10.16" y="44.45" rot="R90"/>
+<element name="Q1" library="adafruit" package="TC26H" value="" x="5.08" y="24.13">
+<attribute name="OC_NEWARK" value="unknown" x="5.08" y="24.13" size="1.778" layer="27" display="off"/>
+<attribute name="MPN" value="" x="5.08" y="24.13" size="1.778" layer="27" display="off"/>
+<attribute name="MF" value="" x="5.08" y="24.13" size="1.778" layer="27" display="off"/>
+<attribute name="OC_FARNELL" value="unknown" x="5.08" y="24.13" size="1.778" layer="27" display="off"/>
 </element>
-<element name="R5" library="adafruit" package="0207/12" value="" x="7.62" y="-3.81"/>
-<element name="JP1" library="adafruit" package="1X06" value="" x="8.89" y="-8.89"/>
-<element name="JP2" library="adafruit" package="1X03" value="" x="5.08" y="-13.97"/>
+<element name="R5" library="adafruit" package="0207/12" value="" x="13.97" y="44.45" rot="R270"/>
+<element name="JP1" library="adafruit" package="1X06" value="" x="11.43" y="17.78" rot="R180"/>
+<element name="JP2" library="adafruit" package="1X03" value="" x="20.32" y="7.62" rot="R270"/>
 </elements>
 <signals>
 <signal name="GND">
 <contactref element="U$1" pad="4"/>
+<contactref element="JP2" pad="2"/>
+<contactref element="U$1" pad="4"/>
+<contactref element="CR2032" pad="-"/>
+<contactref element="R4" pad="2"/>
+<contactref element="S1" pad="3"/>
+<contactref element="R1" pad="2"/>
+<contactref element="R2" pad="2"/>
+<contactref element="R5" pad="2"/>
+<wire x1="6.35" y1="50.8" x2="2.54" y2="50.8" width="0" layer="19" extent="1-1"/>
+<wire x1="10.16" y1="50.8" x2="6.35" y2="50.8" width="0" layer="19" extent="1-1"/>
+<wire x1="20.32" y1="7.62" x2="10.16" y2="50.8" width="0" layer="19" extent="1-1"/>
+<wire x1="13.97" y1="38.1" x2="20.32" y2="7.62" width="0" layer="19" extent="1-1"/>
+<wire x1="38.1" y1="13.97" x2="13.97" y2="38.1" width="0" layer="19" extent="1-1"/>
+<wire x1="19.05" y1="24.13" x2="38.1" y2="13.97" width="0" layer="19" extent="1-1"/>
+<wire x1="10.2616" y1="58.4708" x2="19.05" y2="24.13" width="0" layer="19" extent="1-1"/>
 </signal>
-<signal name="VBAT">
+<signal name="N$1">
+<contactref element="JP1" pad="1"/>
+<contactref element="LED1" pad="A"/>
+<contactref element="U$1" pad="7"/>
+<wire x1="3.81" y1="71.12" x2="17.78" y2="17.78" width="0" layer="19" extent="1-1"/>
+<wire x1="13.97" y1="31.75" x2="3.81" y2="71.12" width="0" layer="19" extent="1-1"/>
+</signal>
+<signal name="N$2">
+<contactref element="JP1" pad="2"/>
+<contactref element="LED2" pad="A"/>
+<contactref element="U$1" pad="6"/>
+<wire x1="16.51" y1="31.75" x2="15.24" y2="17.78" width="0" layer="19" extent="1-1"/>
+<wire x1="3.81" y1="63.5" x2="16.51" y2="31.75" width="0" layer="19" extent="1-1"/>
+</signal>
+<signal name="N$3">
+<contactref element="JP1" pad="4"/>
+<contactref element="R3" pad="1"/>
+<contactref element="R4" pad="1"/>
+<wire x1="10.16" y1="38.1" x2="10.16" y2="72.39" width="0" layer="19" extent="1-1"/>
+<wire x1="10.16" y1="17.78" x2="10.16" y2="38.1" width="0" layer="19" extent="1-1"/>
+</signal>
+<signal name="N$4">
+<contactref element="JP1" pad="6"/>
+<contactref element="LED3" pad="A"/>
+<wire x1="3.81" y1="55.88" x2="5.08" y2="17.78" width="0" layer="19" extent="1-1"/>
+</signal>
+<signal name="N$8">
+<contactref element="U$1" pad="3"/>
+<contactref element="Q1" pad="1"/>
+<wire x1="3.81" y1="24.13" x2="16.51" y2="24.13" width="0" layer="19" extent="1-1"/>
+</signal>
+<signal name="N$9">
+<contactref element="Q1" pad="2"/>
+<contactref element="U$1" pad="2"/>
+<wire x1="6.35" y1="24.13" x2="13.97" y2="24.13" width="0" layer="19" extent="1-1"/>
+</signal>
+<signal name="N$10">
+<contactref element="CR2032" pad="+2"/>
 <contactref element="U$1" pad="8"/>
+<wire x1="11.43" y1="31.75" x2="48.768" y2="13.97" width="0" layer="19" extent="1-1"/>
 </signal>
-<signal name="VCC">
+<signal name="+5V">
+<contactref element="JP2" pad="1"/>
 <contactref element="U$1" pad="1"/>
+<contactref element="R3" pad="2"/>
+<wire x1="20.32" y1="10.16" x2="22.86" y2="72.39" width="0" layer="19" extent="1-1"/>
+<wire x1="11.43" y1="24.13" x2="20.32" y2="10.16" width="0" layer="19" extent="1-1"/>
+</signal>
+<signal name="N$11">
+<contactref element="S1" pad="1"/>
+<contactref element="JP1" pad="5"/>
+<wire x1="10.2616" y1="63.4492" x2="7.62" y2="17.78" width="0" layer="19" extent="1-1"/>
+</signal>
+<signal name="N$5">
+<contactref element="LED1" pad="K"/>
+<contactref element="R1" pad="1"/>
+<wire x1="3.81" y1="73.66" x2="2.54" y2="38.1" width="0" layer="19" extent="1-1"/>
+</signal>
+<signal name="N$6">
+<contactref element="R2" pad="1"/>
+<contactref element="LED2" pad="K"/>
+<wire x1="3.81" y1="66.04" x2="6.35" y2="38.1" width="0" layer="19" extent="1-1"/>
+</signal>
+<signal name="N$7">
+<contactref element="LED3" pad="K"/>
+<contactref element="R5" pad="1"/>
+<wire x1="3.81" y1="58.42" x2="13.97" y2="50.8" width="0" layer="19" extent="1-1"/>
+</signal>
+<signal name="N$12">
+<contactref element="JP1" pad="3"/>
+<contactref element="U$1" pad="5"/>
+<wire x1="19.05" y1="31.75" x2="12.7" y2="17.78" width="0" layer="19" extent="1-1"/>
 </signal>
 </signals>
 </board>

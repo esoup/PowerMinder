@@ -2,16 +2,18 @@
 // By Ian McCutcheon
 // see github esoup https://github.com/esoup/PowerMinder
 // December 22 2013
-
 // This will become the main code - today it only holds
 // code to prove the hardware functions.
-
 // Can we get lights to flash?
-
 // Next changes code to 
+#include <stdlib.h> // for malloc and free
+#include <stddef.h>
+//void* operator new(size_t size) { return malloc(size); }
+//void operator delete(void* ptr) { free(ptr); }
 
 #include <Arduino.h>
 #include "rtc.h"
+#include "Calendar.h"
 
 #define RED 0    // LED pin
 #define YELLOW 1 // LED pin

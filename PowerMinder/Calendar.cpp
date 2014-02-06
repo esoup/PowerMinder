@@ -23,11 +23,9 @@
 #ifdef DEBUG
 #include <stdio.h>
 #endif
-
-#include "Calendar.hpp"
+#include "Calendar.h"
 
 using namespace PowerMinder;
-  
 
 /** The maximum number of period change points in a daily schedule */
 
@@ -95,11 +93,12 @@ static const season_t PGE_seasons[3] = {{5, 1, 0, 1},
 
 
 /** Where the user-defined schedules are stored in NVRAM */
-static schedule_t *user_schedules = /*0x0000;*/ new schedule_t[31];
-
+static schedule_t *user_schedules = 0x0000; //*/ new schedule_t[31];
+// When using new operator these two lines do not compile.  Several attempts to make this comile have failed.
+// I am at a lostt at this moment  reverted to null.
 
 /** Where the user-defined seasons are stored in NVRAM */
-static season_t *user_seasons = /*0x0000;*/ new season_t[64];
+static season_t *user_seasons = 0x0000;//*/ new season_t[64];
 
 
 /** Days in months */
