@@ -2,6 +2,13 @@
 *~
 #*#
 
+# Ignore list for Eagle, a PCB layout tool
+
+# Backup files
+*.s#?
+*.b#?
+*.l#?
+
 # Compiled Object files
 *.slo
 *.lo
