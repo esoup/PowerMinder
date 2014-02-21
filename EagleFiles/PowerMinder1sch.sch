@@ -5339,6 +5339,7 @@ Source: http://optoelectronics.perkinelmer.com/content/Datasheets/DTS_vt900serie
 <part name="P+1" library="supply1" deviceset="+5V" device=""/>
 <part name="S1" library="switch-omron" deviceset="10-XX" device=""/>
 <part name="OPH1" library="photo-elements" deviceset="VT9" device="" technology="0N1"/>
+<part name="R3" library="adafruit" deviceset="R-US_" device="0207/12" value="82"/>
 </parts>
 <sheets>
 <sheet>
@@ -5361,6 +5362,7 @@ Source: http://optoelectronics.perkinelmer.com/content/Datasheets/DTS_vt900serie
 <instance part="P+1" gate="1" x="-43.18" y="48.26"/>
 <instance part="S1" gate="1" x="55.88" y="17.78"/>
 <instance part="OPH1" gate="G$1" x="20.32" y="40.64"/>
+<instance part="R3" gate="G$1" x="55.88" y="50.8" rot="R90"/>
 </instances>
 <busses>
 </busses>
@@ -5386,10 +5388,6 @@ Source: http://optoelectronics.perkinelmer.com/content/Datasheets/DTS_vt900serie
 <wire x1="33.02" y1="58.42" x2="25.4" y2="58.42" width="0.1524" layer="91"/>
 <junction x="25.4" y="58.42"/>
 <junction x="0" y="35.56"/>
-<wire x1="55.88" y1="12.7" x2="10.16" y2="12.7" width="0.1524" layer="91"/>
-<wire x1="10.16" y1="12.7" x2="10.16" y2="15.24" width="0.1524" layer="91"/>
-<wire x1="10.16" y1="15.24" x2="0" y2="15.24" width="0.1524" layer="91"/>
-<junction x="0" y="15.24"/>
 <pinref part="R1" gate="G$1" pin="2"/>
 <wire x1="5.08" y1="55.88" x2="5.08" y2="58.42" width="0.1524" layer="91"/>
 <pinref part="R2" gate="G$1" pin="2"/>
@@ -5399,11 +5397,13 @@ Source: http://optoelectronics.perkinelmer.com/content/Datasheets/DTS_vt900serie
 <junction x="33.02" y="58.42"/>
 <junction x="12.7" y="58.42"/>
 <junction x="5.08" y="58.42"/>
-<pinref part="S1" gate="1" pin="P"/>
 <pinref part="CR2032" gate="G$1" pin="-"/>
 <wire x1="-25.4" y1="17.78" x2="-25.4" y2="25.4" width="0.1524" layer="91"/>
 <wire x1="-25.4" y1="25.4" x2="-5.08" y2="25.4" width="0.1524" layer="91"/>
 <junction x="-5.08" y="25.4"/>
+<wire x1="33.02" y1="58.42" x2="55.88" y2="58.42" width="0.1524" layer="91"/>
+<pinref part="R3" gate="G$1" pin="2"/>
+<wire x1="55.88" y1="58.42" x2="55.88" y2="55.88" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$1" class="0">
@@ -5461,7 +5461,7 @@ Source: http://optoelectronics.perkinelmer.com/content/Datasheets/DTS_vt900serie
 <wire x1="-33.02" y1="38.1" x2="-10.16" y2="38.1" width="0.1524" layer="91"/>
 <junction x="-15.24" y="-5.08"/>
 <wire x1="-33.02" y1="45.72" x2="-33.02" y2="38.1" width="0.1524" layer="91"/>
-<wire x1="-33.02" y1="38.1" x2="-43.18" y2="38.1" width="0.1524" layer="91"/>
+<wire x1="-33.02" y1="38.1" x2="-40.64" y2="38.1" width="0.1524" layer="91"/>
 <wire x1="-43.18" y1="38.1" x2="-43.18" y2="45.72" width="0.1524" layer="91"/>
 <pinref part="P+1" gate="1" pin="+5V"/>
 <wire x1="20.32" y1="45.72" x2="20.32" y2="48.26" width="0.1524" layer="91"/>
@@ -5470,6 +5470,11 @@ Source: http://optoelectronics.perkinelmer.com/content/Datasheets/DTS_vt900serie
 <wire x1="-2.54" y1="45.72" x2="-33.02" y2="45.72" width="0.1524" layer="91"/>
 <junction x="-33.02" y="45.72"/>
 <pinref part="OPH1" gate="G$1" pin="1"/>
+<wire x1="-43.18" y1="38.1" x2="-40.64" y2="38.1" width="0.1524" layer="91"/>
+<wire x1="-40.64" y1="38.1" x2="-40.64" y2="-25.4" width="0.1524" layer="91"/>
+<pinref part="S1" gate="1" pin="P"/>
+<wire x1="-40.64" y1="-25.4" x2="55.88" y2="-25.4" width="0.1524" layer="91"/>
+<wire x1="55.88" y1="-25.4" x2="55.88" y2="12.7" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$11" class="0">
@@ -5480,6 +5485,8 @@ Source: http://optoelectronics.perkinelmer.com/content/Datasheets/DTS_vt900serie
 <pinref part="JP1" gate="A" pin="5"/>
 <wire x1="22.86" y1="15.24" x2="22.86" y2="22.86" width="0.1524" layer="91"/>
 <pinref part="S1" gate="1" pin="S"/>
+<pinref part="R3" gate="G$1" pin="1"/>
+<wire x1="55.88" y1="45.72" x2="55.88" y2="22.86" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$5" class="0">
