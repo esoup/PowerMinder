@@ -13,17 +13,27 @@
 
 #include <Arduino.h>
 #include "rtc.h"
-#include "Calendar.h"
+#include "LED.h"
+//#include "Calendar.h"
 
-#define RED 0    // LED pin
-#define YELLOW 1 // LED pin
-#define GREEN 5  // LED pin
+using namespace PowerMinder;
+
+namespace LED {
+  LED_t red(0);
+  LED_t yellow(1);
+  LED_t green(5);
+
+  void loop()
+  {
+    red.loop();
+    yellow.loop();
+    green.loop();
+  }
+}
+
 
 #define LIGHT 3     // light sensitive resistor pin
 #define IN_BUTTON 4 // Momentary button pin
-
-#define REDCOUNT1 50  // _temp_ until LED class written - time to have red LED on
-#define REDCOUNT2 50  // _temp_ until LED class written - time to have red LED off
 
 
 // Misc testing variables for testing hardware elements
@@ -31,18 +41,16 @@ int     counter = 1;
 int     light = 0;
 int     AMBIENT = 0;
 unsigned long t= 0;
-int     x = 0;
-int     redloop = 0;
-boolean flashingRed = true;
 
 
-// Setup the Button interupt and flag
-boolean yellowOn = false;
+// Service the Button interupt
+bool lastButton = 0;
+bool buttonPressed = false;
 ISR(PCINT0_vect) {
-  boolean isPinHigh = digitalRead(IN_BUTTON); 
-  if (isPinHigh) {
-    yellowOn = true;
+  if (lastButton == 0 && digitalRead(IN_BUTTON)) {
+    buttonPressed = true;
   }
+  lastButton = digitalRead(IN_BUTTON);
 }
 
 void setup()
@@ -55,12 +63,9 @@ void setup()
 
   // Start all (most) of the pins as outputs and let the rest of the code switch modes when needed.
   // These are digispark pns / attiny85 pins
-  pinMode(0, OUTPUT);    digitalWrite(0, LOW);
-  pinMode(1, OUTPUT);    digitalWrite(1, LOW);
   pinMode(2, OUTPUT);    digitalWrite(2, LOW);
   pinMode(3, OUTPUT);    digitalWrite(3, LOW);
-  pinMode(IN_BUTTON, OUTPUT);    digitalWrite(4, HIGH); //Set button pin to input and HIGH sets pull up resistor.
-  pinMode(5, OUTPUT);    digitalWrite(5, LOW);
+  pinMode(IN_BUTTON, INPUT);    digitalWrite(IN_BUTTON, HIGH); //Set button pin to input and HIGH sets pull up resistor.
 
   // pause just to pause
   delay(500);
@@ -138,13 +143,26 @@ void setup()
 AMBIENT = GetAmbient();
 
 // Let's just brute force the GREEN LED on and off so we know our code has made it this far.
-  for (x=0; x < 4; x++) {
-    digitalWrite(GREEN, HIGH);
+  for (int x=0; x < 4; x++) {
+    LED::green.on();
     delay( 150);
-    digitalWrite(GREEN, LOW);
+    LED::green.off();
+    delay( 150);  
+
+    LED::yellow.on();
+    delay( 150);
+    LED::yellow.off();
+    delay( 150);  
+
+    LED::red.on();
+    delay( 150);
+    LED::red.off();
     delay( 150);  
   }
   delay(250);
+
+// Set up the red LED to blinkk every 1/2 seconds
+ LED::red.blink(500);
 }
 
 void loop()
@@ -155,9 +173,9 @@ void loop()
 
   // Read all clock data at once (burst mode).
   //XXX DS1302_clock_burst_read( (uint8_t *) &rtc);
-  pinMode(YELLOW, INPUT); 
-  delayMicroseconds( 4); 
-  digitalWrite(YELLOW, HIGH);
+  //pinMode(YELLOW, INPUT); 
+  //delayMicroseconds( 4); 
+  //digitalWrite(YELLOW, HIGH);
 
   //bcd2bin( rtc.h24.Hour10, rtc.h24.Hour);
   //bcd2bin( rtc.Minutes10, rtc.Minutes);
@@ -170,58 +188,16 @@ void loop()
   delayMicroseconds( 4);
   light = analogRead(LIGHT);
 
-  ///////////////////////////////
-  // Here is a complicated but reasonable way to flash an LED (as Ian sees it)
-  // Code should drop through without any significant delays.  The RED LED is treated
-  // this way in the below code.
-  //
-  // We don't know (yet) the state of the pin mode so we set it to what we need.
-  // Recall we have overloaded the function of some pins.
-  pinMode(RED, OUTPUT); 
-  delayMicroseconds( 4);  // microsecons - way smaller than milliseconds.
-  if (flashingRed) {
-    if (millis() - t < REDCOUNT1) {
-      digitalWrite(RED, HIGH); //   dothis = HIGH; delay (50);
-    } 
-    else {
-      digitalWrite(RED, LOW); //   dothis = LOW; delay(100);
-    }
-    if (abs(millis() - t) > (REDCOUNT1 + REDCOUNT2)) {
-      redloop++;
-      t = millis();
-      if (redloop  > counter) {
-        flashingRed = false;
-      }
-    }
-  }
-  else {
-    counter = 20; //XXX bcd2bin( rtc.Seconds10, rtc.Seconds);
-    pinMode(RED, OUTPUT); 
-    delayMicroseconds( 4);
-    flashingRed = true;
-    t = millis();
-    redloop = 0;
-    digitalWrite(RED, LOW); 
-    delay(30);
+  if (buttonPressed) {
+    LED::yellow.toggle();
+    buttonPressed = false;
   }
 
-  ///////////////////////////////
-  // Using delay here but testing the interupt is more the point of this code.
-  if (yellowOn) {
-    pinMode(YELLOW, OUTPUT); 
-    delayMicroseconds( 4); 
-    // for (int x=0; x < light - AMBIENT ; x++) {
-    digitalWrite(YELLOW, HIGH);
-    delay( 500);
-    digitalWrite(YELLOW, LOW); 
-    yellowOn = false;
-  }
+  LED::loop();
 
   // Again delay = bad but let's just flash the green LED to be sure things are running
-  digitalWrite(GREEN, HIGH);
-  delay( 10);
-  digitalWrite(GREEN, LOW);
-  //delay( 200);
+  LED::green.toggle();
+  delay(250);
 }
 
 //  One important light sensor function will be to establish the ambient light / average
@@ -234,7 +210,7 @@ void loop()
 int GetAmbient() {
   pinMode(LIGHT, INPUT); 
   delayMicroseconds( 4);
-  for (x=0; x < 40; x++) {
+  for (int x=0; x < 40; x++) {
     delayMicroseconds( 4);
     light = light + analogRead(LIGHT);
   }
