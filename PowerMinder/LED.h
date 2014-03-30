@@ -24,6 +24,9 @@ namespace PowerMinder {
   class LED_t {
 
   public:
+    /** Initialize the LED */
+    void init();
+
     /** Is the LED on? */
     bool is_on();
 
@@ -36,8 +39,9 @@ namespace PowerMinder {
     /** Toggle the LED (turns off blink mode) */
     void toggle();
 
-    /** Blink the LED at the specified interval */
-    void blink(unsigned int msec);    ///< Interval in milliseconds (0 == turn off blink mode)
+    /** Blink the LED at the specified on/off interval */
+    void blink(unsigned int msec_on,       ///< ON Interval in milliseconds (0 == turn off blink mode)
+	       unsigned int msec_off = 0); ///< OFF Interval in milliseconds (0 == same as ON interval)
 
     /** LED Service loop method: Call in the main loop() routine */
     void loop();
@@ -45,29 +49,30 @@ namespace PowerMinder {
   // Looks like Sketches don't support private constructors...
   //private:
     /** Create a LED control class */
-    LED_t(unsigned char pin,                  ///< Pin number controlling the LED
-	  bool          HIGH_is_ON = true);   ///< LED is ON if output is HIGH
+    LED_t(unsigned char pin,               ///< Pin number controlling the LED
+	  bool          turn_on = HIGH);   ///< Digital level to turn LED ON
     ~LED_t();
 
   private:
     int  m_pin;
     bool m_is_on;
 
-    int m_HIGH;
-    int m_LOW;
+    int m_ON;
+    int m_OFF;
 
-    unsigned int  m_blink_msec;
+    unsigned int  m_msec_on;
+    unsigned int  m_msec_off;
     unsigned long m_blink_stamp;
 
     void m_on()
     {
-      digitalWrite(m_pin, m_HIGH);
+      digitalWrite(m_pin, m_ON);
       m_is_on = true;
     }
 
     void m_off()
     {
-      digitalWrite(m_pin, m_LOW);
+      digitalWrite(m_pin, m_OFF);
       m_is_on = false;
     }
 

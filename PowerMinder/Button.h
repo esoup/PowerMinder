@@ -20,10 +20,13 @@
 
 namespace PowerMinder {
 
-  /** Class to manage a button connected to a digital pin */
+  /** Class to manage & debounce a button connected to a digital pin */
   class Button_t {
 
   public:
+    /** Initialize the button */
+    void init();
+
     /** Is the button pressed? */
     bool is_pressed();
 
@@ -33,7 +36,7 @@ namespace PowerMinder {
     /** Has the button been released since last time? */
     bool has_been_released();
 
-    /** Button Service loop method: Call in the main loop() routine */
+    /** Button Service loop method: Call in the main loop() or interrupt service routine to detect changes */
     void loop();
 
   // Looks like Sketches don't support private constructors...
@@ -45,7 +48,11 @@ namespace PowerMinder {
     ~Button_t();
 
   private:
+    /** Check the state of the button, with SW debouncing */
+    bool m_is_pressed();
+
     int  m_pin;
+    int  m_pulled;
     bool m_previous_state;
     bool m_was_pressed;
     bool m_was_released;

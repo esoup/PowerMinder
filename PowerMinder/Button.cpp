@@ -27,12 +27,10 @@ using namespace PowerMinder;
 Button_t::Button_t(unsigned char pin,
 		   int           when_pressed,
 		   int           pulled)
-  : m_pin(pin), m_previous_state(0), m_was_pressed(0), m_was_released(0), m_HIGH((when_pressed == HIGH) ? HIGH : LOW)
+  : m_pin(pin), m_pulled(pulled), m_previous_state(0),
+    m_was_pressed(0), m_was_released(0), m_HIGH((when_pressed == HIGH) ? HIGH : LOW)
 {
-  pinMode(pin, INPUT);
-  // Set the pull-up/down
-  digitalWrite(pin, pulled);
-  m_previous_state = (digitalRead(pin) == m_HIGH);
+  init();
 }
 
 
@@ -41,10 +39,44 @@ Button_t::~Button_t()
 }
 
 
+void
+Button_t::init()
+{
+  pinMode(m_pin, INPUT);
+  // Set the pull-up/down
+  digitalWrite(m_pin, m_pulled);
+  m_previous_state = m_is_pressed();
+}
+
+
+bool
+Button_t::m_is_pressed()
+{
+  // All switches have "bounce" and a single sampling is not reliable of the state
+  // of the button as it may bounce between ON/OFF states
+  // We can trust that the button has been pressed or released
+  // only after we have observed X consecutive HIGH/LOW samples.
+  bool previous_state = (digitalRead(m_pin) == m_HIGH);
+  while (1) {
+    unsigned char n = 10;
+    while (n > 0) {
+      bool state = (digitalRead(m_pin) == m_HIGH);
+      if (state != previous_state) {
+	previous_state = state;
+	break;
+      }
+      n--;
+    }
+    // If we get here through normal while loop exit, we have a stable value!
+    if (n == 0) return previous_state;
+  }
+}
+
+
 bool
 Button_t::is_pressed()
 {
-  m_previous_state = (digitalRead(m_pin) == m_HIGH);
+  m_previous_state = m_is_pressed();
   m_was_pressed  = 0;
   m_was_released = 0;
   return m_previous_state;
@@ -74,7 +106,7 @@ Button_t::has_been_released()
 void
 Button_t::loop()
 {
-  bool curr_state = (digitalRead(m_pin) == m_HIGH);
+  bool curr_state = m_is_pressed();
   if (m_previous_state && !curr_state) m_was_released = true;
   if (!m_previous_state && curr_state) m_was_pressed  = true;
   m_previous_state = curr_state;
