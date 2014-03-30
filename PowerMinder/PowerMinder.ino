@@ -6,15 +6,16 @@
 // code to prove the hardware functions.
 // Can we get lights to flash?
 // Next changes code to 
+
+#include <stdint.h>
 #include <stdlib.h> // for malloc and free
 #include <stddef.h>
-//void* operator new(size_t size) { return malloc(size); }
-//void operator delete(void* ptr) { free(ptr); }
 
 #include <Arduino.h>
 #include "rtc.h"
 #include "LED.h"
 #include "Button.h"
+#include "LightSensor.h"
 //#include "Calendar.h"
 
 using namespace PowerMinder;
@@ -47,17 +48,12 @@ namespace LED {
 // This Button class does software debouncing for reliable button sensing.
 Button_t button(4, HIGH, HIGH);
 
-
-#define LIGHT 3     // light sensitive resistor pin
-
-
-// Misc testing variables for testing hardware elements
-int     counter = 1;
-int     light = 0;
-int     AMBIENT = 0;
-unsigned long t= 0;
+LightSensor_t light(3);
 
 
+//
+// Programming Mode
+//
 void set_time()
 {
   // Flash all three LEDs until the button is released then pressed again
@@ -136,9 +132,10 @@ void set_time()
 
 
 void setup()
-{   
+{
   LED::init();
   button.init();
+  light.init();
 
   // Start all (most) of the pins as outputs and let the rest of the code switch modes when needed.
   // These are digispark pns / attiny85 pins
@@ -173,10 +170,8 @@ void setup()
     }
   }
 
-// This is one way to look at the light sensor (see the function below).
-AMBIENT = GetAmbient();
 
-// Let's just brute force the GREEN LED on and off so we know our code has made it this far.
+  // Let's just brute force the GREEN LED on and off so we know our code has made it this far.
   for (int x=0; x < 3; x++) {
     LED::green.on();
     delay(50);
@@ -194,9 +189,10 @@ AMBIENT = GetAmbient();
     delay(450);  
   }
 
-  // Set up the red LED to blink every second
-  LED::red.blink(50, 950);
+  // Set up the green LED to blink every second
+  // LED::green.blink(50, 950);
 }
+
 
 void loop()
 {
@@ -217,29 +213,71 @@ void loop()
   //bcd2bin( rtc.Month10, rtc.Month);
   //bcd2bin( rtc.Year10, rtc.Year);  
 
-  //pinMode(LIGHT, INPUT); 
-  //delayMicroseconds( 4);
-  //light = analogRead(LIGHT);
 
+#ifdef BUTTON_TEST
   LED::loop();
   button.loop();
+  
+  if (button.has_been_pressed() ) LED::red.toggle();
+#endif
 
-  if (button.has_been_pressed() ) LED::yellow.toggle();
+#ifdef LIGHT_TEST_RAW
+  display(light.current());
+  delay(5000);
+#endif
+
+#define LIGHT_TEST
+#ifdef LIGHT_TEST
+  // Blink 1, 2 or 3 LEDs according to the current light level
+  uint16_t brightness = light.current();
+  if (brightness > 0x0000) LED::green.on();
+  if (brightness > 0x0010) LED::yellow.on();
+  if (brightness > 0x0020) LED::red.on();
+  // Keep them on for just a little bit to avoid messing with the light sensor
+  delay(50);
+  LED::green.off();
+  LED::yellow.off();
+  LED::red.off();
+  delay(950);
+#endif
+
 }
 
-//  One important light sensor function will be to establish the ambient light / average
-//  reading.  This GetAmbient() function enables a dynamic threshold to be found and used
-//  when attempting to sens light pulses or changes.
-//
-//  This project will build a class to use the light sensor in a far more involved manner.
-//  A cpp file to encapsulate the below is a TBD.
 
-int GetAmbient() {
-  pinMode(LIGHT, INPUT); 
-  delayMicroseconds( 4);
-  for (int x=0; x < 40; x++) {
-    delayMicroseconds( 4);
-    light = light + analogRead(LIGHT);
+/** "Display" a 16-bit integer value on the LEDs.
+ *  The value is shown two bits at a time, from MSB to LSB
+ *  on the red (MSB) and yellow (LSB) LEDs at 1-sec intervals.
+ *  The value on the red & yellow LEDs is valid when the green LED is ON.
+ *
+ *  For example, the value 0xC9F0 would be blinked as:
+ *
+ *  Red:     *   *   * *
+ *  Yellow:  *     * * *
+ *  Green:   * * * * * * * *
+ *            C   9   F   0
+ */
+
+void
+display(uint16_t value)
+{
+  LED::green.off();
+  LED::yellow.off();
+  LED::red.off();
+
+  uint16_t mask = 0x8000;
+  while (mask) {
+    if (value & mask) LED::red.on();
+    mask >>= 1;
+    if (value & mask) LED::yellow.on();
+    mask >>= 1;
+    LED::green.on();
+
+    delay(1000);
+
+    LED::green.off();
+    LED::yellow.off();
+    LED::red.off();
+
+    delay(1000);
   }
-  return  light / 40;
 }

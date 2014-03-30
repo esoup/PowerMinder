@@ -17,49 +17,39 @@
 //   permissions and limitations under the License.
 //------------------------------------------------------------------------------
 
-
 #include <stdint.h>
 
 namespace PowerMinder {
 
-  /** Class to manage & debounce a button connected to a digital pin */
-  class Button_t {
+  /** Class to manage the light-sensitive resistor */
+  class LightSensor_t {
 
   public:
-    /** Initialize the button */
+    /** Initialize and calibrate the sensor */
     void init();
 
-    /** Is the button pressed? */
-    bool is_pressed();
+    /** Return the current light level reading, scaled to a value in the 0-1023 range.
+     *  The higher the value, the brighter it is.
+     *  Scale may not be perfectly linear.
+     *  It may not be possible to reach the limits of the scale.
+     *
+     * Experiments with unit #2 showed values of ~0x000C for ambient/no light conditions
+     * and values of ~0x0030 when lit with a white LED from 4" away.
+     */
+    uint16_t current();
 
-    /** Has the button been pressed since last time? */
-    bool has_been_pressed();
-
-    /** Has the button been released since last time? */
-    bool has_been_released();
-
-    /** Button Service loop method: Call in the main loop() or interrupt service routine to detect changes */
-    void loop();
+    /** Return the baseline ambient light level as measured during calibration */
+    uint16_t baseline();
 
   // Looks like Sketches don't support private constructors...
   //private:
-    /** Create a button control class */
-    Button_t(uint8_t pin,                     ///< Pin number controlling the LED
-	     uint8_t when_pressed = HIGH,     ///< digital value when pressed
-	     uint8_t pulled       = LOW);     ///< Pull up/down
-    ~Button_t();
+    /** Create a light sensor control class */
+    LightSensor_t(uint8_t pin);                ///< Analog pin number reading the light sensor
+    ~LightSensor_t();
 
   private:
-    /** Check the state of the button, with SW debouncing */
-    bool m_is_pressed();
-
     uint8_t  m_pin;
-    uint8_t  m_pulled;
-    bool     m_previous_state;
-    bool     m_was_pressed;
-    bool     m_was_released;
-
-    uint8_t  m_HIGH;
+    uint16_t m_baseline;
   };
 
 }

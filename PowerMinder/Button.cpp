@@ -24,9 +24,9 @@
 
 using namespace PowerMinder;
 
-Button_t::Button_t(unsigned char pin,
-		   int           when_pressed,
-		   int           pulled)
+Button_t::Button_t(uint8_t pin,
+		   uint8_t when_pressed,
+		   uint8_t pulled)
   : m_pin(pin), m_pulled(pulled), m_previous_state(0),
     m_was_pressed(0), m_was_released(0), m_HIGH((when_pressed == HIGH) ? HIGH : LOW)
 {

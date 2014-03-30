@@ -25,8 +25,8 @@
 
 using namespace PowerMinder;
 
-LED_t::LED_t(unsigned char pin,
-	     bool          turn_on)
+LED_t::LED_t(uint8_t pin,
+	     uint8_t turn_on)
   : m_pin(pin), m_is_on(0), m_ON(turn_on), m_OFF(turn_on == HIGH ? LOW : HIGH),
     m_msec_on(0), m_msec_off(0), m_blink_stamp(0)
 {
@@ -79,8 +79,8 @@ LED_t::toggle()
 
 
 void
-LED_t::blink(unsigned int msec_on,
-	     unsigned int msec_off)
+LED_t::blink(uint16_t msec_on,
+	     uint16_t msec_off)
 {
   m_msec_on  = msec_on;
   m_msec_off = (msec_off == 0) ? msec_on : msec_off;
