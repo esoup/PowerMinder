@@ -33,8 +33,8 @@ namespace PowerMinder {
      *  Scale may not be perfectly linear.
      *  It may not be possible to reach the limits of the scale.
      *
-     * Experiments with unit #2 showed values of ~0x000C for ambient/no light conditions
-     * and values of ~0x0030 when lit with a white LED from 4" away.
+     * Experiments with unit #2 showed values of ~0x0260 for ambient/no light conditions
+     * and values of ~0x02FC when lit with a white LED from 4" away.
      */
     uint16_t current();
 
