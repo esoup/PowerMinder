@@ -131,6 +131,15 @@ void set_time()
 }
 
 
+
+//
+// Interrupt service routine
+//
+ISR(PCINT0_vect) {
+   button.loop();
+}
+
+
 void setup()
 {
   LED::init();
@@ -150,6 +159,10 @@ void setup()
   // Disable Trickle Charger.
   DS1302_write (DS1302_TRICKLE, 0x00);
 
+  // Enable pin-change interrupt to detect button presses
+  GIMSK = _BV(PCIE);    // Enable pin change interrupt
+  PCMSK = _BV(PCINT4);  // Enable the interrupt for only pin 4.
+
   //
   // Go into programming mode if the button is pressed for at least 3 seconds at boot time
   //
@@ -159,7 +172,6 @@ void setup()
     unsigned long now = millis();
     while (millis() - now < 3000) {
       LED::loop();
-      button.loop();
     }
     LED::yellow.off();
     // Has it been released in the last 3 seconds?
@@ -214,9 +226,9 @@ void loop()
   //bcd2bin( rtc.Year10, rtc.Year);  
 
 
+#define BUTTON_TEST
 #ifdef BUTTON_TEST
   LED::loop();
-  button.loop();
   
   if (button.has_been_pressed() ) LED::red.toggle();
 #endif
@@ -226,7 +238,7 @@ void loop()
   delay(5000);
 #endif
 
-#define LIGHT_TEST
+#undef LIGHT_TEST
 #ifdef LIGHT_TEST
   // Blink 1, 2 or 3 LEDs according to the current light level
   uint16_t brightness = light.current();
